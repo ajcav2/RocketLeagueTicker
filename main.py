@@ -35,7 +35,7 @@ def buttonPress(self):
 
 def initialize():
     lcd.clear()
-    lcd.message('Welcome to\nRL app')
+    lcd.message('Welcome to RL\nfor RaspberryPi')
     time.sleep(3)
     singles()
 
@@ -101,13 +101,32 @@ def soloStandard():
 
 def stream(gameMode):
     if gameMode == 1:
-        lcd.message('Singles\nstreamer')
-        time.sleep(1)
-        lcd.clear()
+        for i in range(0,len(players.names)): # 16*numberOfNames
+            points = 999 # will be getPoints(player)
+            message = players.names[i] + ' ' + str(points) + '\n3|8    14|22'
+            lcd.message(message)
+            time.sleep(3)
+            lcd.clear()
     elif gameMode == 2:
-        lcd.message('Doubles\nstreamer')
-        time.sleep(1)
-        lcd.clear()
+        for i in range(0,len(players.names)): # 16*numberOfNames
+            points = 999 # will be getPoints(player)
+            playerRank = 'G1D2' # will be getRank(player)
+            gamesUp = 2 # getGamesUp
+            gamesDown = 4 # getGamesDown
+            pointsUp = 14 # getPointsUp
+            pointsDown = 32 # getPointsDown
+            numTopSpaces = 16 - len(str(points)) - len(playerRank) - len(players.names[i]) - 1
+            topSpaces = ''
+            for j in range(0,numTopSpaces):
+                topSpaces = topSpaces + ' '
+            numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
+            bottomSpaces = ''
+            for k in range(0,numBottomSpaces):
+                bottomSpaces = bottomSpaces + ' '
+            message = players.names[i] + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
+            lcd.message(message)
+            time.sleep(3)
+            lcd.clear()
     elif gameMode == 3:
         lcd.message('Standard\nstreamer')
         time.sleep(1)
