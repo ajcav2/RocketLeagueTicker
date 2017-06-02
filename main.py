@@ -128,13 +128,34 @@ def stream(gameMode):
             time.sleep(3)
             lcd.clear()
     elif gameMode == 3:
-        lcd.message('Standard\nstreamer')
-        time.sleep(1)
-        lcd.clear()
+        for i in range(0,len(player.names)):
+            lcd.message = getMessage(i)
+            time.sleep(3.5)
+            lcd.clear()
     else:
         lcd.message('Solo standard\nstreamer')
         time.sleep(1)
         lcd.clear()
+
+##def getMessage(playerNumber):
+##    playerName = players.names[playerNumber]
+##    screenName = players.screenNames[playerNumber]
+##    allPlayerInfo = callToAPI(screenName)
+##    playerRank = allPlayerInfo[1]
+##    gamesUp = allPlayerInfo[2]
+##    gamesDown = allPlayerInfo[3]
+##    pointsUp = allPlayerInfo[4]
+##    pointsDown = allPlayerInfo[5]
+##    numTopSpaces = 16 - len(str(points)) - len(playerRank) - len(players.names[i]) - 1
+##    topSpaces = ''
+##    for j in range(0,numTopSpaces):
+##        topSpaces = topSpaces + ' '
+##    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
+##    bottomSpaces = ''
+##    for k in range(0,numBottomSpaces):
+##        bottomSpaces = bottomSpaces + ' '
+##    message = players.names[i] + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
+##    return message
 
 GPIO.add_event_detect(19,GPIO.FALLING,callback=buttonPress,bouncetime=300)
 initialize()
