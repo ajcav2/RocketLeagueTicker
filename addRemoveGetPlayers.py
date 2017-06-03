@@ -16,7 +16,7 @@ def addPlayer():
     # Get name of new player
     newPlayer = ''
     while len(newPlayer) < 1:
-        newPlayer = raw_input('What is your name?: ')
+        newPlayer = raw_input('What is your name? (Ctrl-c to cancel): ')
 
     # Get console of new player
     newConsole = ''
@@ -73,3 +73,13 @@ def getPlayers():
         ProjectionExpression="#n",
         ExpressionAttributeNames=ean
         )
+
+def printNames():
+    global names
+    namesDict = getPlayers()
+    names = []
+    for key in namesDict['Items']:
+        names.append(key['name'])
+    
+    for name in names:
+        print(name.title())

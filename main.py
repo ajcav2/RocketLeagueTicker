@@ -2,7 +2,6 @@ import RPi.GPIO as GPIO
 import time
 import Adafruit_CharLCD as LCD
 import addRemoveGetPlayers
-import streamer
 
 # Pin setup
 lcd_rs = 25
@@ -28,54 +27,25 @@ lcd_rows = 2
 # Initialize LCD panel
 lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
 
-# Create a list of names
-namesDict = addRemoveGetPlayers.getPlayers()
-names = []
-for key in namesDict['Items']:
-    names.append(key['name'])
-
 # Initial state of button
 pressed = False
+
 
 # Button toggler
 def buttonPress(self):
     global pressed
     pressed = True
 
-def addRemovePlayer(self):
-    global names
-
-    # Detemine if user wishes to add or remove a player
-    addRemove = ''
-    while (addRemove != 'add' and addRemove != 'remove' and addRemove != 'cancel'):
-        addRemove = raw_input('Would you like to add or remove a player? (add/remove/cancel): ')
-
-    # Add a player
-    if (addRemove == 'add'):
-        addRemoveGetPlayers.addPlayer()
-
-    # Remove a player
-    elif (addRemove == 'remove'):
-        addRemoveGetPlayers.removePlayer()
-        
-    else: # Cancel the interaction
-        print("Cancelled.")
-        return
-    
-    # Wait for DynamoDB to update
-    time.sleep(5)
-    
-    # Regenerate name list
-    namesDict = addRemoveGetPlayers.getPlayers()
-    names = []
-    for key in namesDict['Items']:
-        names.append(key['name'])
-        
-
 def initialize():
+    # Welcome
     lcd.clear()
     lcd.message('Welcome to RL\nfor RaspberryPi')
     time.sleep(3)
+
+    # Create a list of names
+    updateNames()
+
+    # Start program in singles
     singles()
 
 def singles():
@@ -137,20 +107,39 @@ def soloStandard():
         stream(4)
     pressed = False
     singles()
-
+# 16481
 
 def stream(gameMode):
+    # Get updated name list
+    updateNames()
+
+    # Stream singles information
     if gameMode == 1:
         for name in names:
             if not pressed:
                 try:
                     points = 999 # will be getPoints(player)
-                    message = name.title() + ' ' + str(points) + '\n3|8    14|22'
+                    playerRank = 'S1D3' # will be getRank(player)
+                    gamesUp = 2 # getGamesUp
+                    gamesDown = 4 # getGamesDown
+                    pointsUp = 14 # getPointsUp
+                    pointsDown = 32 # getPointsDown
+                    numTopSpaces = 16 - len(str(points)) - len(playerRank) - len(name) - 1
+                    topSpaces = ''
+                    for j in range(0,numTopSpaces):
+                        topSpaces = topSpaces + ' '
+                    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
+                    bottomSpaces = ''
+                    for k in range(0,numBottomSpaces):
+                        bottomSpaces = bottomSpaces + ' '
+                    message = name.title() + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
                     lcd.message(message)
-                    time.sleep(3)
+                    time.sleep(3.5)
                     lcd.clear()
                 except IndexError:
                     return
+
+    # Stream doubles information
     elif gameMode == 2:
         for name in names:
             if not pressed:
@@ -175,6 +164,8 @@ def stream(gameMode):
                     lcd.clear()
                 except IndexError:
                     return
+
+    # Stream standard information
     elif gameMode == 3:
         for i in range(0,len(players.names)):
             if not pressed:
@@ -189,10 +180,19 @@ def stream(gameMode):
 ##                  lcd.clear()
 ##                except IndexError:
 ##                    return
+    # Stream solo standard information
     else:
         lcd.message('Solo standard\nstreamer')
         time.sleep(1)
         lcd.clear()
+
+def updateNames():
+    # Update player list
+    global names
+    namesDict = addRemoveGetPlayers.getPlayers()
+    names = []
+    for key in namesDict['Items']:
+        names.append(key['name'])
 
 ##def getMessage(player):
 ##    playerName = player
@@ -214,9 +214,9 @@ def stream(gameMode):
 ##    message = players.names[i] + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
 ##    return message
 
-GPIO.add_event_detect(19,GPIO.FALLING,callback=buttonPress,bouncetime=300)
-GPIO.add_event_detect(13,GPIO.FALLING,callback=addRemovePlayer,bouncetime=300)
-initialize()
+if __name__ == "__main__":
+    GPIO.add_event_detect(19,GPIO.FALLING,callback=buttonPress,bouncetime=300)
+    initialize()
 
 
 
