@@ -80,7 +80,6 @@ def initialize():
 
 def singles():
     global pressed
-    global names
     GPIO.output(21,True)
     GPIO.output(20,False)
     GPIO.output(16,False)
@@ -96,7 +95,6 @@ def singles():
 
 def doubles():
     global pressed
-    global names
     GPIO.output(21,True)
     GPIO.output(20,True)
     GPIO.output(16,False)
