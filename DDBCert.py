@@ -1,0 +1,2 @@
+accessKey = 'AKIAIIG5TOA6C2QHZLGA'
+secretKey = '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'
