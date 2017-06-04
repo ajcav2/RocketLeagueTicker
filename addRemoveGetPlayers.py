@@ -70,9 +70,21 @@ def removePlayer():
 
 def getPlayers():
     return table.scan(
-        ProjectionExpression="#n",
+        ProjectionExpression="#n,screenName,console",
         ExpressionAttributeNames=ean
         )
+
+def getScreenNameConsole(name):
+    response = table.get_item(
+        Key={
+            'name':name
+            }
+        )
+    result = []
+    result.append(response['Item']['console'])
+    result.append(response['Item']['screenName'])
+    return result
+    
 
 def printNames():
     global names

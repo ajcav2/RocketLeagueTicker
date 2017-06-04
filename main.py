@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 import time
 import Adafruit_CharLCD as LCD
 import addRemoveGetPlayers
+import someCoolLights
 
 # Pin setup
 lcd_rs = 25
@@ -40,7 +41,7 @@ def initialize():
     # Welcome
     lcd.clear()
     lcd.message('Welcome to RL\nfor RaspberryPi')
-    time.sleep(3)
+    someCoolLights.intro()
 
     # Create a list of names
     updateNames()
@@ -107,97 +108,40 @@ def soloStandard():
         stream(4)
     pressed = False
     singles()
-# 16481
 
 def stream(gameMode):
     # Get updated name list
     updateNames()
 
-    # Stream singles information
-    if gameMode == 1:
-        for name in names:
-            if not pressed:
-                try:
-                    points = 999 # will be getPoints(player)
-                    playerRank = 'S1D3' # will be getRank(player)
-                    gamesUp = 2 # getGamesUp
-                    gamesDown = 4 # getGamesDown
-                    pointsUp = 14 # getPointsUp
-                    pointsDown = 32 # getPointsDown
-                    numTopSpaces = 16 - len(str(points)) - len(playerRank) - len(name) - 1
-                    topSpaces = ''
-                    for j in range(0,numTopSpaces):
-                        topSpaces = topSpaces + ' '
-                    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
-                    bottomSpaces = ''
-                    for k in range(0,numBottomSpaces):
-                        bottomSpaces = bottomSpaces + ' '
-                    message = name.title() + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
-                    lcd.message(message)
-                    time.sleep(3.5)
-                    lcd.clear()
-                except IndexError:
-                    return
-
-    # Stream doubles information
-    elif gameMode == 2:
-        for name in names:
-            if not pressed:
-                try:
-                    points = 999 # will be getPoints(player)
-                    playerRank = 'G1D2' # will be getRank(player)
-                    gamesUp = 2 # getGamesUp
-                    gamesDown = 4 # getGamesDown
-                    pointsUp = 14 # getPointsUp
-                    pointsDown = 32 # getPointsDown
-                    numTopSpaces = 16 - len(str(points)) - len(playerRank) - len(name) - 1
-                    topSpaces = ''
-                    for j in range(0,numTopSpaces):
-                        topSpaces = topSpaces + ' '
-                    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
-                    bottomSpaces = ''
-                    for k in range(0,numBottomSpaces):
-                        bottomSpaces = bottomSpaces + ' '
-                    message = name.title() + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
-                    lcd.message(message)
-                    time.sleep(3.5)
-                    lcd.clear()
-                except IndexError:
-                    return
-
-    # Stream standard information
-    elif gameMode == 3:
-        for i in range(0,len(players.names)):
-            if not pressed:
-                lcd.message(players.names[i])
-                time.sleep(3.5)
+    # Stream information for each player
+    for i in range(0,len(names)):
+        if not pressed:
+            try:
                 lcd.clear()
-##        for i in range(0,len(players.names)):
-##            if not pressed:               
-##                try:                                 ################
-##                  lcd.message(getMessage(player))    # EXAMPLE CODE #
-##                  time.sleep(3)                      ################
-##                  lcd.clear()
-##                except IndexError:
-##                    return
-    # Stream solo standard information
-    else:
-        lcd.message('Solo standard\nstreamer')
-        time.sleep(1)
-        lcd.clear()
+                lcd.message(getMessage(names[i],screenNames[i],gameMode))
+                time.sleep(3)
+                
+            except IndexError:
+                return
 
 def updateNames():
     # Update player list
     global names
+    global screenNames
+    global consoles
     namesDict = addRemoveGetPlayers.getPlayers()
     names = []
+    screenNames = []
+    consoles = []
     for key in namesDict['Items']:
         names.append(key['name'])
+        screenNames.append(key['screenName'])
+        consoles.append(key['console'])
 
-##def getMessage(player):
+def getMessage(name,screenName,gameMode):
 ##    playerName = player
 ##    screenName = addRemoveGetPlayers...
-##    allPlayerInfo = callToAPI(screenName)
+##    allPlayerInfo = callToAPI(name)
 ##    playerRank = allPlayerInfo[1]
 ##    gamesUp = allPlayerInfo[2]
 ##    gamesDown = allPlayerInfo[3]
@@ -213,6 +157,22 @@ def updateNames():
 ##        bottomSpaces = bottomSpaces + ' '
 ##    message = players.names[i] + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
 ##    return message
+    points = 999
+    playerRank = 'S1D3'
+    gamesUp = 2
+    gamesDown = 4
+    pointsUp = 14
+    pointsDown = 32
+    numTopSpaces = 16 - len(str(points)) - len(playerRank) - len(name) - 1
+    topSpaces = ''
+    for j in range(0,numTopSpaces):
+        topSpaces = topSpaces + ' '
+    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
+    bottomSpaces = ''
+    for k in range(0,numBottomSpaces):
+        bottomSpaces = bottomSpaces + ' '
+    message = name.title() + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
+    return message
 
 if __name__ == "__main__":
     GPIO.add_event_detect(19,GPIO.FALLING,callback=buttonPress,bouncetime=300)
