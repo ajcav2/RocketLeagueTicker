@@ -3,6 +3,8 @@ import time
 import Adafruit_CharLCD as LCD
 import addRemoveGetPlayers
 import someCoolLights
+import APICall
+import translateRank
 
 # Pin setup
 lcd_rs = 25
@@ -30,10 +32,10 @@ lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_c
 
 # Initial state of button
 pressed = False
-
+points = 0
 
 # Button toggler
-def buttonPress(self):
+def toggleGameMode(self):
     global pressed
     pressed = True
 
@@ -117,8 +119,9 @@ def stream(gameMode):
     for i in range(0,len(names)):
         if not pressed:
             try:
+                message = getMessage(names[i],screenNames[i],consoles[i],gameMode)
                 lcd.clear()
-                lcd.message(getMessage(names[i],screenNames[i],gameMode))
+                lcd.message(message)
                 time.sleep(3)
                 
             except IndexError:
@@ -138,44 +141,80 @@ def updateNames():
         screenNames.append(key['screenName'])
         consoles.append(key['console'])
 
-def getMessage(name,screenName,gameMode):
-##    playerName = player
-##    screenName = addRemoveGetPlayers...
-##    allPlayerInfo = callToAPI(name)
-##    playerRank = allPlayerInfo[1]
-##    gamesUp = allPlayerInfo[2]
-##    gamesDown = allPlayerInfo[3]
-##    pointsUp = allPlayerInfo[4]
-##    pointsDown = allPlayerInfo[5]
-##    numTopSpaces = 16 - len(str(points)) - len(playerRank) - len(players.names[i]) - 1
-##    topSpaces = ''
-##    for j in range(0,numTopSpaces):
-##        topSpaces = topSpaces + ' '
-##    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
-##    bottomSpaces = ''
-##    for k in range(0,numBottomSpaces):
-##        bottomSpaces = bottomSpaces + ' '
-##    message = players.names[i] + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
-##    return message
-    points = 999
-    playerRank = 'S1D3'
-    gamesUp = 2
-    gamesDown = 4
-    pointsUp = 14
-    pointsDown = 32
+def getMessage(name,screenName,console,gameMode):
+    global points
+    response = APICall.getResponse(screenName,console,gameMode)
+
+    # Check for errors
+    if 'code' in [keys for keys in response]:
+        if response['code'] == 404:
+            return "Player " + screenName + "\nnot found"
+        elif response['code'] == 401:
+            return "Invalid API key"
+        elif response['code'] == 400:
+            return "Invalid request"
+        elif response['code'] >= 500:
+            return "RL API not\n accessible now"
+
+    # Get playlist
+    if (gameMode == 1):
+        playlist = '10'
+        game = "singles"
+    elif (gameMode == 2):
+        playlist = '11'
+        game = "doubles"
+    elif (gameMode == 3):
+        playlist = '13'
+        game = "standard"
+    elif (gameMode == 4):
+        playlist = '12'
+        game = "solo standard"
+
+    # Get current season
+    currentSeason = [season for season in response['rankedSeasons']][0]
+    season = response['rankedSeasons'][currentSeason]
+    numPlaylists = len([plist for plist in season])
+    if numPlaylists < 1:
+        return "No ranked stats\n for " + name.title()
+    else:
+        try:
+            if season[playlist] != None:
+                # Get information about desired playlist
+                points = str(season[playlist]['rankPoints'])
+                division = season[playlist]['division']
+                tier = season[playlist]['tier']
+        except KeyError:
+            # User does not have any stats in this playlist
+            return "No " + game + "\ninfo for " + name.title()
+
+    # Get player rank (i.e. Tier 2 Div 3 --> 'B2S3')
+    playerRank = translateRank.getRank(tier,division)
+
+    # Format the top row spacing to look nice
     numTopSpaces = 16 - len(str(points)) - len(playerRank) - len(name) - 1
     topSpaces = ''
     for j in range(0,numTopSpaces):
         topSpaces = topSpaces + ' '
-    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
-    bottomSpaces = ''
-    for k in range(0,numBottomSpaces):
-        bottomSpaces = bottomSpaces + ' '
-    message = name.title() + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
+
+    # Compile message
+    message = name.title() + topSpaces + playerRank + ' ' + str(points)
+    print(message)
     return message
 
+##    gamesUp = 2
+##    gamesDown = 4
+##    pointsUp = 14
+##    pointsDown = 32
+##    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
+##    bottomSpaces = ''
+##    for k in range(0,numBottomSpaces):
+##        bottomSpaces = bottomSpaces + ' '
+##    message = name.title() + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
+##    return message
+    
+
 if __name__ == "__main__":
-    GPIO.add_event_detect(19,GPIO.FALLING,callback=buttonPress,bouncetime=300)
+    GPIO.add_event_detect(19,GPIO.FALLING,callback=toggleGameMode,bouncetime=300)
     initialize()
 
 
