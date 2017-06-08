@@ -21,14 +21,14 @@ There are a number of steps to setting up the required software and getting the 
 DynamoDB was utilized to store users names, screen names, and consoles. Register for an AWS account at [aws.amazon.com](aws.amazon.com). After creating an account, find the DynamoDB service and create a new table. Name the table "RocketLeagueTicker", and enter "name" for the partition key (key should be type String). Create the table. Next, create an IAM role that allows full read/write access to the DynamoDB table, and generate an access key and secret key. Store these somewhere safe as you won't be able to see them again.
 
 #### BeautifulSoup
-BeautifulSoup is used to parse HTML found in the [Rocket League Tracking Network] (https://rocketleague.tracker.network/). Values found here are used to calculate points required to change division. To install open a terminal on the Raspberry Pi and enter:
+BeautifulSoup is used to parse HTML found in the [Rocket League Tracking Network](https://rocketleague.tracker.network/). Values found here are used to calculate points required to change division. To install open a terminal on the Raspberry Pi and enter:
 ```
 sudo apt-get install python-bs4
 ```
 More information on BeautifulSoup can be found [here](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#)
 
 #### Adafruit Python CharLCD
-This library was used to communicate with the LCD panel. Installation instructions can be found [here] (https://github.com/adafruit/Adafruit_Python_CharLCD)
+This library was used to communicate with the LCD panel. Installation instructions can be found [here](https://github.com/adafruit/Adafruit_Python_CharLCD)
 
 ### Setup
 A Fritzing file can be found inside the repository that describes how to wire the LCD and Raspberry Pi. The setup is also shown below:
@@ -48,7 +48,7 @@ Inside the DDBCert file, you must insert the access key and secret key from the 
 accessKey = "sdff423fjsdf34w3f"
 secretKey = "324bsdf8hk34h8shjhkfow348h/34f"
 ```
-Inside the APIKey file, you must insert a rocket league API key. Instructions to obtain a key can be found [here] (http://documentation.rocketleaguestats.com/#introduction). The file should look like:
+Inside the APIKey file, you must insert a rocket league API key. Instructions to obtain a key can be found [here](http://documentation.rocketleaguestats.com/#introduction). The file should look like:
 ```
 key = "2345ndsfjkdsfhj34"
 ```
