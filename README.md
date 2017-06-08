@@ -6,13 +6,13 @@ These instructions will get you started using the Rocket League Ticker. Addition
 
 ### Hardware
 For this project, a Raspberry Pi Model B was used. Other models can work as well, though the GPIO numbering may be different. In addition to the Raspberry Pi, you will also need:
-  1.) 6 220 Ohm resistors
-  2.) 6 LED's
-  3.) Male:Female jumper wires
-  4.) Male:Male jumper wires
-  5.) 16x2 LCD panel
-  6.) 1 Potentiometer
-  7.) 2 Push buttons
+  1. 6 220 Ohm resistors
+  2. 6 LED's
+  3. Male:Female jumper wires
+  4. Male:Male jumper wires
+  5. 16x2 LCD panel
+  6. 1 Potentiometer
+  7. 2 Push buttons
 
 ### Software
 There are a number of steps to setting up the required software and getting the required packages. This project assumes Python 2.7.9 is already installed on the Raspberry Pi.
