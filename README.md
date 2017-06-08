@@ -15,7 +15,7 @@ For this project, a Raspberry Pi Model B was used. Other models can work as well
   7.) 2 Push buttons
 
 ### Software
-There are a number of steps to setting up the required software and getting the required packages.
+There are a number of steps to setting up the required software and getting the required packages. This project assumes Python 2.7.9 is already installed on the Raspberry Pi.
 
 #### DynamoDB
 DynamoDB was utilized to store users names, screen names, and consoles. Register for an AWS account at [aws.amazon.com](aws.amazon.com). After creating an account, find the DynamoDB service and create a new table. Name the table "RocketLeagueTicker", and enter "name" for the partition key (key should be type String). Create the table. Next, create an IAM role that allows full read/write access to the DynamoDB table, and generate an access key and secret key. Store these somewhere safe as you won't be able to see them again.
