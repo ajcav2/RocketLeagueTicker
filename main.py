@@ -5,6 +5,8 @@ import addRemoveGetPlayers
 import someCoolLights
 import APICall
 import translateRank
+import RLTrackingParser
+import math
 
 # Pin setup
 lcd_rs = 25
@@ -136,6 +138,8 @@ def stream(gameMode):
             except IndexError:
                 return
         if needMoreInfo:
+            # User has pressed the GPIO13 button, requesting more information
+            # about the current player
             try:
                 stats = getPlayerStats(screenNames[i],consoles[i],gameMode)
                 lcd.clear()
@@ -170,6 +174,7 @@ def stream(gameMode):
                 time.sleep(3)
                 lcd.clear()
 
+                # Reset toggler
                 needMoreInfo = False
 
             except IndexError:
@@ -235,7 +240,7 @@ def getMessage(name,screenName,console,gameMode):
             # User does not have any stats in this playlist
             return "No " + game + "\ninfo for " + name.title()
 
-    # Get player rank (i.e. Tier 2 Div 3 --> 'B2S3')
+    # Get player rank (e.g. Tier 2 Div 0 --> 'B2S1')
     playerRank = translateRank.getRank(tier,division)
 
     # Format the top row spacing to look nice
@@ -244,23 +249,29 @@ def getMessage(name,screenName,console,gameMode):
     for j in range(0,numTopSpaces):
         topSpaces = topSpaces + ' '
 
+    # Get data from Rocket League Tracking Network
+    HTMLData = RLTrackingParser.getHTMLData(screenName,console,gameMode)
+    pointsDown = HTMLData[0]
+    pointsUp = HTMLData[1]
+
+    # Calculate gamesUp/gamesDown from pointsUp and pointsDown and
+    # the average number of points awarder per game
+    gamesDown = int(math.ceil(int(round(int(pointsDown)))/9) + 1)
+    gamesUp = int(math.ceil(int(round(int(pointsUp)))/9) + 1)
+
+    # Format the bottom row spacing to look nice
+    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
+    bottomSpaces = ''
+    for k in range(0,numBottomSpaces):
+        bottomSpaces = bottomSpaces + ' '
+
     # Compile message
-    message = name.title() + topSpaces + playerRank + ' ' + str(points)
+    message = name.title() + topSpaces + playerRank + ' ' + str(points)+ '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
     print(message)
     return message
 
-##    gamesUp = 2
-##    gamesDown = 4
-##    pointsUp = 14
-##    pointsDown = 32
-##    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
-##    bottomSpaces = ''
-##    for k in range(0,numBottomSpaces):
-##        bottomSpaces = bottomSpaces + ' '
-##    message = name.title() + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
-##    return message
-
 def getPlayerStats(screenName,console,gameMode):
+    # Return everything in the 'stats' section of the API response
     response = APICall.getResponse(screenName,console,gameMode)
     stats = []
     stats.append(str(response['stats']['wins']))
