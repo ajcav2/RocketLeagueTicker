@@ -1,8 +1,8 @@
 # RocketLeagueTicker
-This project aims to give real-time updates on Rocket League user stats. The project user can add/remove players that they wish to stream stats about from a DynamoDB database using a Raspberry Pi. The project utilizes and API and HTML parsing to obtain stats for users, then displays them on a 16x2 LCD screen.
+This project displays real-time Rocket League stat updates via a 16x2 LCD screen attached to a Raspberry Pi 3 Model B. Player information is stored in a DynamoDB database. These players are then looked up using a Rocket League API and by parsing the [Rocket League Tracking Network website](https://rocketleague.tracker.network/). Relevant information is then passed to the LCD screen for the user to enjoy.
 
 ## Getting Started
-These instructions will get you started using the Rocket League Ticker. Additionally, the required hardware and software will be listed here.
+These instructions will help you to set up the Rocket League Ticker. Additionally, the required hardware and software will be listed here.
 
 ### Hardware
 For this project, a Raspberry Pi Model B was used. Other models can work as well, though the GPIO numbering may be different. In addition to the Raspberry Pi, you will also need:
@@ -15,10 +15,10 @@ For this project, a Raspberry Pi Model B was used. Other models can work as well
   7. 2 Push buttons
 
 ### Software
-There are a number of steps to setting up the required software and getting the required packages. This project assumes Python 2.7.9 is already installed on the Raspberry Pi.
+There are a number of steps to setting up the required software and getting the required packages. These instructions assume that Python 2.7.9 is already installed on the Raspberry Pi.
 
 #### DynamoDB
-DynamoDB was utilized to store users names, screen names, and consoles. Register for an AWS account at [aws.amazon.com](aws.amazon.com). After creating an account, find the DynamoDB service and create a new table. Name the table "RocketLeagueTicker", and enter "name" for the partition key (key should be type String). Create the table. Next, create an IAM role that allows full read/write access to the DynamoDB table, and generate an access key and secret key. Store these somewhere safe as you won't be able to see them again.
+DynamoDB was utilized to store users names, screen names, and consoles. Register for an AWS account at [aws.amazon.com](aws.amazon.com). After creating an account, find the DynamoDB service and create a new table. Name the table `RocketLeagueTicker`, and enter `name` for the partition key (key should be type `String`). Create the table. Next, create an IAM role that allows full read/write access to the DynamoDB table, and generate an access key and secret key. Store these somewhere safe as you won't be able to see them again.
 
 #### BeautifulSoup
 BeautifulSoup is used to parse HTML found in the [Rocket League Tracking Network](https://rocketleague.tracker.network/). Values found here are used to calculate points required to change division. To install open a terminal on the Raspberry Pi and enter:
@@ -63,16 +63,29 @@ To start the software, run the main script:
 ```nohup sudo python main.py &```
 
 ## Features
+This section details more specific features about the Rocket League Ticker
+
+### LCD Screen
 The program will display information about the players on the LCD screen. The format is as follows:
 ```
-playerName                                         TierDivision      Points
+playerName                                         TierDivision       Points
+
 gamesToDivisionDown|gamesToDivisionUp     pointsToDivisionDown|pointsToDivisionUp
 ```
-In addition, there are two buttons connected to the Raspberry Pi. The button connected to Pin 35 can be pressed to change the game mode. After pressing it, the LED's should indicate a change in game mode, along with a brief message on the LCD screen. 
+
+For example, player Shelby has 570 points in singles. Shelby is ranked as Silver III Division III. Shelby would need to lose 8 points to be demoted to the previous division, and Shelby needs 13 points to move up one division. This corresponds to losing ~1 game to move down a division, or winning ~2 games to move up a division. When Shelby's stats are shown on the LCD screen, they will appear as follows:
+```
+Shelby  S3D3  570
+1|2          8|13
+```
+### LED's and Buttons
+The LED's connected to the Raspberry pi serve to provide information to the user that would otherwise take up too much screen real estate. The LED's connected to pins 16, 20, 21, and 26 indicate which game mode the user is streaming information about (i.e. 2 LED's lit signify doubles information is streaming). To change game modes, the user can press the button connected to pin 35. The user should see a short message on the LCD to indicate the change in game mode, and should see a change in the number of lit LED's.
 
 The other button, connected to Pin 33, can be pressed to retrieve more information about the player that is currently being displayed (i.e. number of goals, MVP's, etc.). 
 
-The two extra LED's indicate when the program is making a request to the API, and when it is opening the Rocket League Tracking Network. 
+The two extra LED's indicate when the program is making a request to the API, and when it is opening the Rocket League Tracking Network.
+
+While the program is running, the user does not need to stop the program to add or remove players. The player list can be modified while the program is running by using the approproate shell script to add or remove players. The user can also SSH into the Raspberry Pi from their smartphone so as to never need to use an external monitor to add or remove players.
 
 ## Authors
 Alex Cavanaugh -- ajcav2@gmail.com
