@@ -91,7 +91,7 @@ The other button, connected to Pin 33, can be pressed to retrieve more informati
 
 The two extra LED's indicate when the program is making a request to the API (pin 31), and when it is opening the Rocket League Tracking Network (pin 29).
 
-While the program is running, the user does not need to stop the program to add or remove players. The player list can be modified while the program is running by using the approproate shell script to add or remove players. The user can also SSH into the Raspberry Pi from their smartphone so as to never need to use an external monitor to add or remove players.
+While the program is running, the user does not need to stop the program to add or remove players. The player list can be modified while the program is running by using the appropriate shell script to add or remove players. The user can also SSH into the Raspberry Pi from their smartphone so as to never need to use an external monitor to add or remove players.
 
 ## Authors
 Alex Cavanaugh -- ajcav2@gmail.com
