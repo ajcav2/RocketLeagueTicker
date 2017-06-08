@@ -32,7 +32,7 @@ def getRank(tier,division):
     elif (tier == 15):
         t = "C3"
     elif (tier == 16):
-        return "GC"
+        return " GC "
     else:
         t = "err"
 

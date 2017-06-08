@@ -30,14 +30,22 @@ lcd_rows = 2
 # Initialize LCD panel
 lcd = LCD.Adafruit_CharLCD(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows, lcd_backlight)
 
-# Initial state of button
+# Initial state of buttons
 pressed = False
+needMoreInfo = False
+
+# Initialize points variable
 points = 0
 
 # Button toggler
 def toggleGameMode(self):
     global pressed
     pressed = True
+
+# Toggle display of extra player stats
+def toggleMoreInfo(self):
+    global needMoreInfo
+    needMoreInfo = True
 
 def initialize():
     # Welcome
@@ -112,6 +120,7 @@ def soloStandard():
     singles()
 
 def stream(gameMode):
+    global needMoreInfo
     # Get updated name list
     updateNames()
 
@@ -124,6 +133,45 @@ def stream(gameMode):
                 lcd.message(message)
                 time.sleep(3)
                 
+            except IndexError:
+                return
+        if needMoreInfo:
+            try:
+                stats = getPlayerStats(screenNames[i],consoles[i],gameMode)
+                lcd.clear()
+                
+                message = names[i].title() + "\nWins: " + stats[0]
+                lcd.message(message)
+                time.sleep(3)
+                lcd.clear()
+
+                message = names[i].title() + "\nGoals: " + stats[1]
+                lcd.message(message)
+                time.sleep(3)
+                lcd.clear()
+
+                message = names[i].title() + "\nMVPs: " + stats[2]
+                lcd.message(message)
+                time.sleep(3)
+                lcd.clear()
+
+                message = names[i].title() + "\nSaves: " + stats[3]
+                lcd.message(message)
+                time.sleep(3)
+                lcd.clear()
+
+                message = names[i].title() + "\nShots: " + stats[4]
+                lcd.message(message)
+                time.sleep(3)
+                lcd.clear()
+
+                message = names[i].title() + "\nAssists: " + stats[5]
+                lcd.message(message)
+                time.sleep(3)
+                lcd.clear()
+
+                needMoreInfo = False
+
             except IndexError:
                 return
 
@@ -211,10 +259,22 @@ def getMessage(name,screenName,console,gameMode):
 ##        bottomSpaces = bottomSpaces + ' '
 ##    message = name.title() + topSpaces + playerRank + ' ' + str(points) + '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
 ##    return message
+
+def getPlayerStats(screenName,console,gameMode):
+    response = APICall.getResponse(screenName,console,gameMode)
+    stats = []
+    stats.append(str(response['stats']['wins']))
+    stats.append(str(response['stats']['goals']))
+    stats.append(str(response['stats']['mvps']))
+    stats.append(str(response['stats']['saves']))
+    stats.append(str(response['stats']['shots']))
+    stats.append(str(response['stats']['assists']))
+    return stats
     
 
 if __name__ == "__main__":
     GPIO.add_event_detect(19,GPIO.FALLING,callback=toggleGameMode,bouncetime=300)
+    GPIO.add_event_detect(13,GPIO.FALLING,callback=toggleMoreInfo,bouncetime=300)
     initialize()
 
 
