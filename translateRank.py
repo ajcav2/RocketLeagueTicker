@@ -1,6 +1,6 @@
 def getRank(tier,division):
     if (tier == 0):
-        return "unranked"
+        return " Unranked"
     elif (tier == 1):
         t = "B1"
     elif (tier == 2):

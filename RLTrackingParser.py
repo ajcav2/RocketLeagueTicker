@@ -18,56 +18,31 @@ def getHTMLData(screenName,console,gameMode):
     opener.addheaders = [('User-agent','Mozilla/5.0')]
     r = opener.open(URL)
     soup = BeautifulSoup(r)
-    
     # Get a string that gives all HTML between 'tr' tags
     allTableInfo = str(soup.find_all("tr"))
-
-    # Cut strings to find points up and points down in each playlist    
-    horzSingles = allTableInfo.split("Duel",1)[1]
-    horzSingles = horzSingles.split("/tr",1)[0]
-    singlesPoints = re.findall(r'\~([^<]+)\<',horzSingles)
-
-    horzDoubles = allTableInfo.split("Doubles",1)[1]
-    horzDoubles = horzDoubles.split("/tr",1)[0]
-    doublesPoints = re.findall(r'\~([^<]+)\<',horzDoubles)
-
-    horzSoloStandard = allTableInfo.split("Solo Standard",1)[1]
-    horzSoloStandard = horzSoloStandard.split("/tr",1)[0]
-    soloStandardPoints = re.findall(r'\~([^<]+)\<',horzSoloStandard)
-
-    horzStandard = allTableInfo.split("Ranked Standard",1)[1]
-    horzStandard = horzStandard.split("/tr",1)[0]
-    standardPoints = re.findall(r'\~([^<]+)\<',horzStandard)
-
+    # Cut strings to find points up and points down in each playlist
     if (gameMode == 1):
-        # Ensure that each entry has a value
-        # (website sometimes misses entries)
-        if (len(singlesPoints) == 2):
-            pointsDown = singlesPoints[0]
-            pointsUp = singlesPoints[1]
-        else:
-            pointsDown = 0
-            pointsUp = 0
+        horz = allTableInfo.split("Duel",1)[1]
+        horz = horz.split("/tr",1)[0]
+        pointsUpDown = re.findall(r'\~([^<]+)\<',horz)
     elif (gameMode == 2):
-        if (len(doublesPoints) == 2):
-            pointsDown = doublesPoints[0]
-            pointsUp = doublesPoints[1]
-        else:
-            pointsDown = 0
-            pointsUp = 0
-    elif (gameMode == 3):
-        if (len(standardPoints) == 2):
-            pointsDown = standardPoints[0]
-            pointsUp = standardPoints[1]
-        else:
-            pointsDown = 0
-            pointsUp = 0
+        horz = allTableInfo.split("Doubles",1)[1]
+        horz = horz.split("/tr",1)[0]
+        pointsUpDown = re.findall(r'\~([^<]+)\<',horz)
+    elif (gameMode == 4):
+        horz = allTableInfo.split("Solo Standard",1)[1]
+        horz = horz.split("/tr",1)[0]
+        pointsUpDown = re.findall(r'\~([^<]+)\<',horz)
     else:
-        if (len(soloStandardPoints) == 2):
-            pointsDown = soloStandardPoints[0]
-            pointsUp = soloStandardPoints[1]
-        else:
-            pointsDown = 0
-            pointsUp = 0
+        horz = allTableInfo.split("Ranked Standard",1)[1]
+        horz = horz.split("/tr",1)[0]
+        pointsUpDown = re.findall(r'\~([^<]+)\<',horz)
+
+    if (len(pointsUpDown) == 2):
+        pointsDown = pointsUpDown[0]
+        pointsUp = pointsUpDown[1]
+    else:
+        pointsDown = 0
+        pointsUp = 0
 
     return [pointsDown,pointsUp]

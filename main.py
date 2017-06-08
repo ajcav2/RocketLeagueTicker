@@ -24,6 +24,8 @@ GPIO.setup(21,GPIO.OUT)
 GPIO.setup(20,GPIO.OUT)
 GPIO.setup(16,GPIO.OUT)
 GPIO.setup(26,GPIO.OUT)
+GPIO.setup(6,GPIO.OUT)
+GPIO.setup(5,GPIO.OUT)
 
 # Define LCD column and row size for 16x2 LCD.
 lcd_columns = 16
@@ -196,7 +198,9 @@ def updateNames():
 
 def getMessage(name,screenName,console,gameMode):
     global points
+    GPIO.output(6,True)
     response = APICall.getResponse(screenName,console,gameMode)
+    GPIO.output(6,False)
 
     # Check for errors
     if 'code' in [keys for keys in response]:
@@ -250,14 +254,20 @@ def getMessage(name,screenName,console,gameMode):
         topSpaces = topSpaces + ' '
 
     # Get data from Rocket League Tracking Network
+    GPIO.output(5,True)
     HTMLData = RLTrackingParser.getHTMLData(screenName,console,gameMode)
+    GPIO.output(5,False)
     pointsDown = HTMLData[0]
     pointsUp = HTMLData[1]
 
     # Calculate gamesUp/gamesDown from pointsUp and pointsDown and
     # the average number of points awarder per game
-    gamesDown = int(math.ceil(int(round(int(pointsDown)))/9) + 1)
-    gamesUp = int(math.ceil(int(round(int(pointsUp)))/9) + 1)
+    if (int(pointsDown) != 0 and int(pointsUp != 0)):
+        gamesDown = int(math.ceil(int(round(int(pointsDown)))/9) + 1)
+        gamesUp = int(math.ceil(int(round(int(pointsUp)))/9) + 1)
+    else:
+        gamesDown = '-'
+        gamesUp = '-'
 
     # Format the bottom row spacing to look nice
     numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
