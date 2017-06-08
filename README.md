@@ -73,7 +73,7 @@ This section details more specific features about the Rocket League Ticker.
 ### LCD Screen
 The program will display information about the players on the LCD screen. The format is as follows:
 ```
-playerName                                         TierDivision       Points
+playerName                                         TierDivision            Points
 
 gamesToDivisionDown|gamesToDivisionUp     pointsToDivisionDown|pointsToDivisionUp
 ```
