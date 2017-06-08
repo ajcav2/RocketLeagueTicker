@@ -85,7 +85,7 @@ Shelby  S3D3  570
 ```
 
 ### LEDs and Buttons
-The LEDs connected to the Raspberry pi provide information to the user that would otherwise take up too much screen real estate. The LED's connected to pins 16, 20, 21, and 26 indicate which game mode the user is streaming information about (i.e. 2 LED's lit signify doubles information is streaming). To change game modes, the user can press the button connected to pin 35. The user should see a short message on the LCD to indicate the change in game mode, and should see a change in the number of lit LED's.
+The LEDs connected to the Raspberry Pi provide information to the user that would otherwise take up too much screen real estate. The LEDs connected to pins 16, 20, 21, and 26 indicate which game mode the user is streaming information about (i.e. 2 LEDs lit signify doubles information is streaming). To change game modes, the user can press the button connected to pin 35. The user should see a short message on the LCD to indicate the change in game mode, and should see a change in the number of lit LEDs.
 
 The other button, connected to Pin 33, can be pressed to retrieve more information about the player that is currently being displayed (i.e. number of goals, MVP's, etc.). 
 
