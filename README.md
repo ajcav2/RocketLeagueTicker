@@ -1,5 +1,5 @@
 # RocketLeagueTicker
-This project displays real-time Rocket League player stat updates via a 16x2 LCD screen attached to a Raspberry Pi 3 Model B. Player information is stored in a DynamoDB database. These players are then looked up using a Rocket League API and by parsing the [Rocket League Tracking Network website](https://rocketleague.tracker.network/). Relevant information is then passed to the LCD screen for the user to enjoy.
+This project displays real-time Rocket League player stat updates via a 16x2 LCD screen attached to a Raspberry Pi 3 Model B. Player information is stored in a DynamoDB database. Information about these players is gathered from the Rocket League API and by parsing the [Rocket League Tracking Network website](https://rocketleague.tracker.network/). Relevant information is then passed to the LCD screen for the user to enjoy.
 
 ## Getting Started
 These instructions will help you to set up the Rocket League Ticker. Additionally, the required hardware and software will be listed here.
