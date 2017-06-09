@@ -262,7 +262,7 @@ def getMessage(name,screenName,console,gameMode):
 
     # Calculate gamesUp/gamesDown from pointsUp and pointsDown and
     # the average number of points awarder per game
-    if (int(pointsDown) != 0 and int(pointsUp != 0)):
+    if (int(pointsDown) != 0 and int(pointsUp) != 0):
         gamesDown = int(math.ceil(int(round(int(pointsDown)))/9) + 1)
         gamesUp = int(math.ceil(int(round(int(pointsUp)))/9) + 1)
     else:
