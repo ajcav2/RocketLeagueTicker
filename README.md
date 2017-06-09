@@ -19,7 +19,7 @@ For this project, a Raspberry Pi 3 Model B was used. Other models can work as we
 There are a number of steps to setting up the required software and getting the required packages. These instructions assume that Python 2.7.9 is already installed on the Raspberry Pi.
 
 #### DynamoDB
-DynamoDB was utilized to store users names, screen names, and consoles. To get started with DynamoDB, register for an AWS account at [aws.amazon.com](aws.amazon.com). After creating an account, find the DynamoDB service and create a new table. Name the table `RocketLeagueTicker`, and enter `name` for the partition key (key should be type `String`). Create the table. Next, create an IAM role that allows full read/write access to the DynamoDB table, and generate an access key and secret key. Store these somewhere safe as you won't be able to view them again.
+DynamoDB was utilized to store users names, screen names, and consoles. To get started with DynamoDB, register for an AWS account at [aws.amazon.com](aws.amazon.com). After creating an account, find the DynamoDB service and create a new table. Name the table `RocketLeagueTicker`, and enter `name` for the partition key (key should be type `String`). Create the table. Create columns in DynamoDB for `name`, `screenName`, and `console`. Next, create an IAM role that allows full read/write access to the DynamoDB table, and generate an access key and secret key. Store these somewhere safe as you won't be able to view them again.
 
 #### BeautifulSoup
 BeautifulSoup is used to parse HTML found in the [Rocket League Tracking Network](https://rocketleague.tracker.network/). Values found here are used to calculate points required to change division. To install, open a terminal on the Raspberry Pi and enter:
