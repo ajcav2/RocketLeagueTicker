@@ -133,9 +133,10 @@ def stream(gameMode):
         if not pressed:
             try:
                 message = getMessage(names[i],screenNames[i],consoles[i],gameMode)
+                time.sleep(3)
                 lcd.clear()
                 lcd.message(message)
-                time.sleep(3)
+                
                 
             except IndexError:
                 return
