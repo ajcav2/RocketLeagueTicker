@@ -41,6 +41,9 @@ needMoreInfo = False
 # Initialize points variable
 points = 0
 
+# Get time to measure function run times
+currentTime = lambda: int(round(time.time() * 1000))
+
 # Button toggler
 def toggleGameMode(self):
     global pressed
@@ -132,10 +135,20 @@ def stream(gameMode):
     for i in range(0,len(names)):
         if not pressed:
             try:
+                begin = currentTime()
                 message = getMessage(names[i],screenNames[i],consoles[i],gameMode)
-                time.sleep(3)
-                lcd.clear()
-                lcd.message(message)
+                end = currentTime()
+                timeToSleep = (3.5 - (end - begin) / 1000)
+                if (timeToSleep < 0):
+                    lcd.clear()
+                    lcd.message(message)
+                else:
+                    time.sleep(timeToSleep)
+                    lcd.clear()
+                    lcd.message(message)
+##                time.sleep(3.5)
+##                lcd.clear()
+##                lcd.message(message)
                 
                 
             except IndexError:
