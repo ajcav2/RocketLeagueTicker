@@ -38,10 +38,17 @@ def getHTMLData(screenName,console,gameMode):
         horz = horz.split("/tr",1)[0]
         pointsUpDown = re.findall(r'\~([^<]+)\<',horz)
 
+    # If length == 2, both point values were found
     if (len(pointsUpDown) == 2):
         pointsDown = pointsUpDown[0]
         pointsUp = pointsUpDown[1]
-    else:
+    elif ("color:red" in horz): # Only points down was found
+        pointsDown = pointsUpDown[0]
+        pointsUp = 0
+    elif ("color:green" in horz): # Only points up was found
+        pointsDown = 0
+        pointsUp = pointsUpDown[0]
+    else: # No points were found for division changes
         pointsDown = 0
         pointsUp = 0
 
