@@ -68,10 +68,10 @@ def initialize():
 
 def singles():
     global pressed
-    GPIO.output(21,True)
+    GPIO.output(21,False)
     GPIO.output(20,False)
     GPIO.output(16,False)
-    GPIO.output(26,False)
+    GPIO.output(26,True)
     lcd.clear()
     lcd.message('Singles')
     time.sleep(2)
@@ -83,10 +83,10 @@ def singles():
 
 def doubles():
     global pressed
-    GPIO.output(21,True)
-    GPIO.output(20,True)
-    GPIO.output(16,False)
-    GPIO.output(26,False)
+    GPIO.output(21,False)
+    GPIO.output(20,False)
+    GPIO.output(16,True)
+    GPIO.output(26,True)
     lcd.clear()
     lcd.message('Doubles')
     time.sleep(2)
@@ -98,10 +98,10 @@ def doubles():
 
 def standard():
     global pressed
-    GPIO.output(21,True)
+    GPIO.output(21,False)
     GPIO.output(20,True)
     GPIO.output(16,True)
-    GPIO.output(26,False)
+    GPIO.output(26,True)
     lcd.clear()
     lcd.message('Standard')
     time.sleep(2)
@@ -139,16 +139,10 @@ def stream(gameMode):
                 message = getMessage(names[i],screenNames[i],consoles[i],gameMode)
                 end = currentTime()
                 timeToSleep = (3.5 - (end - begin) / 1000)
-                if (timeToSleep < 0):
-                    lcd.clear()
-                    lcd.message(message)
-                else:
+                if (timeToSleep > 0):
                     time.sleep(timeToSleep)
-                    lcd.clear()
-                    lcd.message(message)
-##                time.sleep(3.5)
-##                lcd.clear()
-##                lcd.message(message)
+                lcd.clear()
+                lcd.message(message)
                 
                 
             except IndexError:
@@ -273,6 +267,8 @@ def getMessage(name,screenName,console,gameMode):
     GPIO.output(5,False)
     pointsDown = HTMLData[0]
     pointsUp = HTMLData[1]
+    streak = HTMLData[2]
+    streakUpDown = HTMLData[3]
 
     # Calculate gamesUp/gamesDown from pointsUp and pointsDown and
     # the average number of points awarder per game
@@ -286,14 +282,16 @@ def getMessage(name,screenName,console,gameMode):
     else:
         gamesUp = '-'
 
+    streakMessage = str(streak) + streakUpDown
+
     # Format the bottom row spacing to look nice
-    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown))
+    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown)) - len(streakMessage) - 3
     bottomSpaces = ''
     for k in range(0,numBottomSpaces):
         bottomSpaces = bottomSpaces + ' '
 
     # Compile message
-    message = name.title() + topSpaces + playerRank + ' ' + str(points)+ '\n' + str(gamesDown) + '|' + str(gamesUp) + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
+    message = name.title() + topSpaces + playerRank + ' ' + str(points)+ '\n' + str(gamesDown) + '|' + str(gamesUp) + '   ' + streakMessage + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
     print(message)
     return message
 
@@ -314,10 +312,4 @@ if __name__ == "__main__":
     GPIO.add_event_detect(19,GPIO.FALLING,callback=toggleGameMode,bouncetime=300)
     GPIO.add_event_detect(13,GPIO.FALLING,callback=toggleMoreInfo,bouncetime=300)
     initialize()
-
-
-
-
-
-
 
