@@ -75,7 +75,6 @@ def singles():
     lcd.clear()
     lcd.message('Singles')
     time.sleep(2)
-    lcd.clear()
     while not pressed:
         stream(1)
     pressed = False
@@ -90,7 +89,6 @@ def doubles():
     lcd.clear()
     lcd.message('Doubles')
     time.sleep(2)
-    lcd.clear()
     while not pressed:
         stream(2)
     pressed = False
@@ -105,7 +103,6 @@ def standard():
     lcd.clear()
     lcd.message('Standard')
     time.sleep(2)
-    lcd.clear()
     while not pressed:
         stream(3)
     pressed = False
@@ -120,7 +117,6 @@ def soloStandard():
     lcd.clear()
     lcd.message('Solo Standard')
     time.sleep(2)
-    lcd.clear()
     while not pressed:
         stream(4)
     pressed = False
@@ -144,8 +140,13 @@ def stream(gameMode):
                 lcd.clear()
                 lcd.message(message)
                 
-                
             except IndexError:
+                return
+            except ValueError:
+                lcd.clear()
+                lcd.message("No Response from\nAPI for " + names[i].title())
+                time.sleep(3)
+                lcd.clear()
                 return
         if needMoreInfo:
             # User has pressed the GPIO13 button, requesting more information
@@ -181,8 +182,7 @@ def stream(gameMode):
 
                 message = names[i].title() + "\nAssists: " + stats[5]
                 lcd.message(message)
-                time.sleep(3)
-                lcd.clear()
+                time.sleep(1)
 
                 # Reset toggler
                 needMoreInfo = False
@@ -263,37 +263,45 @@ def getMessage(name,screenName,console,gameMode):
 
     # Get data from Rocket League Tracking Network
     GPIO.output(5,True)
-    HTMLData = RLTrackingParser.getHTMLData(screenName,console,gameMode)
-    GPIO.output(5,False)
-    pointsDown = HTMLData[0]
-    pointsUp = HTMLData[1]
-    streak = HTMLData[2]
-    streakUpDown = HTMLData[3]
+    
+    try:
+        HTMLData = RLTrackingParser.getHTMLData(screenName,console,gameMode)
+        GPIO.output(5,False)
+        pointsDown = HTMLData[0]
+        pointsUp = HTMLData[1]
+        streak = HTMLData[2]
+        streakUpDown = HTMLData[3]
 
-    # Calculate gamesUp/gamesDown from pointsUp and pointsDown and
-    # the average number of points awarder per game
-    if (int(pointsDown) != 0):
-        gamesDown = int(math.ceil(int(round(int(pointsDown)))/14) + 1)
-    else:
-        gamesDown = '-'
+        # Calculate gamesUp/gamesDown from pointsUp and pointsDown and
+        # the average number of points awarder per game
+        if (int(pointsDown) != 0):
+            gamesDown = int(math.ceil(int(round(int(pointsDown)))/14) + 1)
+        else:
+            gamesDown = '-'
 
-    if (int(pointsUp) != 0):
-        gamesUp = int(math.ceil(int(round(int(pointsUp)))/14) + 1)
-    else:
-        gamesUp = '-'
+        if (int(pointsUp) != 0):
+            gamesUp = int(math.ceil(int(round(int(pointsUp)))/14) + 1)
+        else:
+            gamesUp = '-'
 
-    streakMessage = str(streak) + streakUpDown
+        # Compile streak info
+        streakMessage = str(streak) + streakUpDown
 
-    # Format the bottom row spacing to look nice
-    numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown)) - len(streakMessage) - 3
-    bottomSpaces = ''
-    for k in range(0,numBottomSpaces):
-        bottomSpaces = bottomSpaces + ' '
+        # Format the bottom row spacing to look nice
+        numBottomSpaces = 16 - len(str(gamesUp)) - len(str(gamesDown)) - 2 - len(str(pointsUp)) - len(str(pointsDown)) - len(streakMessage) - 3
+        bottomSpaces = ''
+        for k in range(0,numBottomSpaces):
+            bottomSpaces = bottomSpaces + ' '
 
-    # Compile message
-    message = name.title() + topSpaces + playerRank + ' ' + str(points)+ '\n' + str(gamesDown) + '|' + str(gamesUp) + '   ' + streakMessage + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
-    print(message)
-    return message
+        # Compile message
+        message = name.title() + topSpaces + playerRank + ' ' + str(points)+ '\n' + str(gamesDown) + '|' + str(gamesUp) + '   ' + streakMessage + bottomSpaces + str(pointsDown) + '|' + str(pointsUp)
+        print(message)
+        return message
+    except urllib2.URLError:
+        lcd.clear()
+        lcd.message("HTML Timeout!")
+        time.sleep(20)
+        return ("HTML Timeout!")
 
 def getPlayerStats(screenName,console,gameMode):
     # Return everything in the 'stats' section of the API response
