@@ -29,29 +29,30 @@ def getHTMLData(screenName,console,gameMode):
         horz = allTableInfo.split("Doubles",1)[1]
         horz = horz.split("/tr",1)[0]
         pointsUpDown = re.findall(r'\~([^<]+)\<',horz)
-        streak = re.findall(r'\:([^"]+)\"',horz)
     elif (gameMode == 4):
         horz = allTableInfo.split("Solo Standard",1)[1]
         horz = horz.split("/tr",1)[0]
         pointsUpDown = re.findall(r'\~([^<]+)\<',horz)
-        streak = re.findall(r'\:([^"]+)\"',horz)
     else:
         horz = allTableInfo.split("Ranked Standard",1)[1]
         horz = horz.split("/tr",1)[0]
         pointsUpDown = re.findall(r'\~([^<]+)\<',horz)
-        streak = re.findall(r'\:([^"]+)\"',horz)
 
+    # Get streak info
     if ("Win Streak" in horz):
         streakUpDown = "^"
-    else:
+    elif ("Losing Streak" in horz):
         streakUpDown = "v"
+    else:
+        streakUpDown = "-"
         
     if ("Streak" in horz):
         streakString = horz.split("Streak: ",1)[1]
-        streak = streakString.split(" ",1)[0]
+        print(streakString + "\n")
+        streak = streakString.split("<",1)[0]
+        print(streak + "\n")
     else:
         streak = "-"
-
     streak = "".join(streak.splitlines())
     
         
